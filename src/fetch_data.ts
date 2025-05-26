@@ -10,7 +10,7 @@ dotenv.config();
 
 // Configuration constants/variables from environment
 const INFURA_URL = process.env.INFURA_URL ||'https://mainnet.infura.io/v3/97574cc27eba4c56ae3ae8937f706131' ;
-const POOL_ADDRESS = process.env.POOL_ADDRESS || '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640';
+const POOL_ADDRESS = process.env.POOL_ADDRESS || '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
 const THE_GRAPH_URL = process.env.THE_GRAPH_URL || 'https://gateway.thegraph.com/api/eb7648b32137aed8efb0a31da11ed06a/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV'; 
 const MAX_RECORDS_PER_QUERY = 100; 
 const MAX_RETRIES = 3; // Max retries for GraphQL requests
