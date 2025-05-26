@@ -9,9 +9,9 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 // Configuration constants/variables from environment
-const INFURA_URL = process.env.INFURA_URL || 'https://mainnet.infura.io/v3/97574cc27eba4c56ae3ae8937f706131';
-const POOL_ADDRESS = process.env.POOL_ADDRESS || '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640'; // Default Example: USDC/WETH 0.05% pool
-const THE_GRAPH_URL = 'https://api.https://gateway.thegraph.com/api/eb7648b32137aed8efb0a31da11ed06a/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV.com/subgraphs/name/uniswap/uniswap-v3';
+const INFURA_URL = process.env.INFURA_URL ||'https://mainnet.infura.io/v3/97574cc27eba4c56ae3ae8937f706131' ;
+const POOL_ADDRESS = process.env.POOL_ADDRESS || '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640';
+const THE_GRAPH_URL = process.env.THE_GRAPH_URL || 'https://gateway.thegraph.com/api/eb7648b32137aed8efb0a31da11ed06a/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV'; 
 const MAX_RECORDS_PER_QUERY = 100; 
 const MAX_RETRIES = 3; // Max retries for GraphQL requests
 const RETRY_DELAY_MS = 5000; // Delay between retries in milliseconds
