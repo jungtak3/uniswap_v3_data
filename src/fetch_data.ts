@@ -8,10 +8,14 @@ import * as dotenv from 'dotenv';
 // Initialize dotenv to load environment variables
 dotenv.config();
 
+console.log(`DEBUG: POOL_ADDRESS from .env: ${process.env.POOL_ADDRESS}`);
+console.log(`DEBUG: START_TIMESTAMP from .env: ${process.env.START_TIMESTAMP}`);
+console.log(`DEBUG: END_TIMESTAMP from .env: ${process.env.END_TIMESTAMP}`);
+
 // Configuration constants/variables from environment
 const INFURA_URL = process.env.INFURA_URL ||'https://mainnet.infura.io/v3/97574cc27eba4c56ae3ae8937f706131' ;
-const POOL_ADDRESS = process.env.POOL_ADDRESS || '0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8';
-const THE_GRAPH_URL = process.env.THE_GRAPH_URL || 'https://gateway.thegraph.com/eb7648b32137aed8efb0a31da11ed06a/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV'; 
+const POOL_ADDRESS = process.env.POOL_ADDRESS || '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640'; // USDC/WETH 0.05% on Ethereum
+const THE_GRAPH_URL = process.env.THE_GRAPH_URL || 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
 const MAX_RECORDS_PER_QUERY = 100; 
 const MAX_RETRIES = 3; // Max retries for GraphQL requests
 const RETRY_DELAY_MS = 5000; // Delay between retries in milliseconds
@@ -433,9 +437,10 @@ async function main() {
   const graphQLClient = new GraphQLClient(THE_GRAPH_URL);
 
   // Initialize CSV writers
-  const swapsFilePath = 'swaps.csv';
-  const mintsFilePath = 'mints.csv';
-  const burnsFilePath = 'burns.csv';
+  const outputDir = './data'; // Define output directory
+  const swapsFilePath = `${outputDir}/swaps.csv`;
+  const mintsFilePath = `${outputDir}/mints.csv`;
+  const burnsFilePath = `${outputDir}/burns.csv`;
 
   const swapsWriter = createObjectCsvWriter({
     path: swapsFilePath,
