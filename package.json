@@ -1,0 +1,32 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node src/fetch_data.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jungtak3/uniswap_v3_data.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jungtak3/uniswap_v3_data/issues"
+  },
+  "homepage": "https://github.com/jungtak3/uniswap_v3_data#readme",
+  "dependencies": {
+    "@uniswap/v3-sdk": "^3.25.2",
+    "csv-writer": "^1.6.0",
+    "ethers": "^5.8.0",
+    "graphql-request": "^7.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.21",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}
