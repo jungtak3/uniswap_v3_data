@@ -6,7 +6,7 @@ import { createObjectCsvWriter } from 'csv-writer';
 // Configuration constants/variables
 const INFURA_URL = 'https://mainnet.infura.io/v3/97574cc27eba4c56ae3ae8937f706131'; // Replace with your Infura or Alchemy URL
 const POOL_ADDRESS = '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640'; // Example: USDC/WETH 0.05% pool
-const THE_GRAPH_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
+const THE_GRAPH_URL = 'https://gateway.thegraph.com/api/eb7648b32137aed8efb0a31da11ed06a/subgraphs/id/5zvR82QoaXYFyDEKLZ9t6v9adgnptxYpKpSbxtgVENFV';
 const MAX_RECORDS_PER_QUERY = 1000; // The Graph typically limits to 100 or 1000
 
 // ABI for IUniswapV3Pool
