@@ -46,9 +46,9 @@ interface MintData {
   owner: string;
   sender: string;
   origin: string;
-  amount: string;
-  amount0: string;
-  amount1: string;
+  amount: string; // Liquidity amount, typically integer
+  amount0: string; // Token amount, decimal string
+  amount1: string; // Token amount, decimal string
   tickLower: string;
   tickUpper: string;
 }
@@ -58,9 +58,9 @@ interface BurnData {
   timestamp: string;
   owner: string;
   origin: string;
-  amount: string;
-  amount0: string;
-  amount1: string;
+  amount: string; // Liquidity amount, typically integer
+  amount0: string; // Token amount, decimal string
+  amount1: string; // Token amount, decimal string
   tickLower: string;
   tickUpper: string;
 }
@@ -101,7 +101,7 @@ async function makeGraphQLRequest<T = any>(
 
 
 async function getPoolDataFromSDK(poolAddress: string, provider: ethers.providers.JsonRpcProvider) {
-  // This function remains unchanged as it doesn't involve CSV writing
+  // This function remains unchanged
   console.log("\n--- Fetching current pool data using Uniswap SDK ---");
   const poolContract = new ethers.Contract(poolAddress, IUniswapV3PoolABI, provider);
   try {
@@ -116,9 +116,9 @@ async function getPoolDataFromSDK(poolAddress: string, provider: ethers.provider
     console.log(`Token0: ${token0Address}`);
     console.log(`Token1: ${token1Address}`);
     console.log(`Fee: ${fee}`);
-    console.log(`Current Liquidity: ${liquidity.toString()}`);
-    console.log(`Current SqrtPriceX96: ${sqrtPriceX96.toString()}`);
-    console.log(`Current Tick: ${tickCurrent}`);
+    console.log(`Current Liquidity: ${liquidity.toString()}`); // Liquidity is integer
+    console.log(`Current SqrtPriceX96: ${sqrtPriceX96.toString()}`); // sqrtPriceX96 is integer
+    console.log(`Current Tick: ${tickCurrent}`); // tick is integer
   } catch (error) {
     console.error("Error fetching pool data from SDK:", error);
   }
@@ -136,9 +136,9 @@ async function fetchHistoricalDataWithTheGraph(
   console.log(`\n--- Fetching historical data using The Graph for pool ${poolAddress} ---`);
   console.log(`Time range: ${new Date(startTimestamp * 1000).toISOString()} to ${new Date(endTimestamp * 1000).toISOString()}`);
 
-  let allSwaps: SwapData[] = []; // Still used for return value/count
-  let allMints: MintData[] = []; // Still used for return value/count
-  let allBurns: BurnData[] = []; // Still used for return value/count
+  let allSwaps: SwapData[] = []; 
+  let allMints: MintData[] = []; 
+  let allBurns: BurnData[] = []; 
 
   // Fetch Swaps with timestamp-based pagination
   let lastTimestampSwaps = startTimestamp;
@@ -163,8 +163,8 @@ async function fetchHistoricalDataWithTheGraph(
           token1 { id symbol }
           sender
           recipient
-          amount0
-          amount1
+          amount0 # Token amount, decimal string
+          amount1 # Token amount, decimal string
           sqrtPriceX96
           tick
         }
@@ -187,17 +187,17 @@ async function fetchHistoricalDataWithTheGraph(
           token1: s.token1.id,
           sender: s.sender,
           recipient: s.recipient,
-          amount0: ethers.BigNumber.from(s.amount0).toString(),
-          amount1: ethers.BigNumber.from(s.amount1).toString(),
-          sqrtPriceX96: ethers.BigNumber.from(s.sqrtPriceX96).toString(),
-          tick: ethers.BigNumber.from(s.tick).toString(),
+          amount0: s.amount0, // Keep as string from The Graph
+          amount1: s.amount1, // Keep as string from The Graph
+          sqrtPriceX96: ethers.BigNumber.from(s.sqrtPriceX96).toString(), // Integer
+          tick: ethers.BigNumber.from(s.tick).toString(), // Integer
         }));
         
         if (processedSwapsBatch.length > 0) {
             await swapsWriter.writeRecords(processedSwapsBatch);
             console.log(`Written ${processedSwapsBatch.length} swaps to CSV.`);
         }
-        allSwaps = allSwaps.concat(processedSwapsBatch); // For count and potential return
+        allSwaps = allSwaps.concat(processedSwapsBatch);
 
         const newLastTimestamp = parseInt(data.swaps[data.swaps.length - 1].timestamp);
         console.log(`Fetched ${data.swaps.length} swaps. Last timestamp: ${new Date(newLastTimestamp * 1000).toISOString()}. Total swaps so far: ${allSwaps.length}`);
@@ -248,9 +248,9 @@ async function fetchHistoricalDataWithTheGraph(
           owner
           sender
           origin
-          amount
-          amount0
-          amount1
+          amount # Liquidity amount, integer
+          amount0 # Token amount, decimal string
+          amount1 # Token amount, decimal string
           tickLower
           tickUpper
         }
@@ -273,18 +273,18 @@ async function fetchHistoricalDataWithTheGraph(
           owner: m.owner,
           sender: m.sender,
           origin: m.origin,
-          amount: ethers.BigNumber.from(m.amount).toString(),
-          amount0: ethers.BigNumber.from(m.amount0).toString(),
-          amount1: ethers.BigNumber.from(m.amount1).toString(),
-          tickLower: ethers.BigNumber.from(m.tickLower).toString(),
-          tickUpper: ethers.BigNumber.from(m.tickUpper).toString(),
+          amount: ethers.BigNumber.from(m.amount).toString(), // Liquidity, integer
+          amount0: m.amount0, // Keep as string from The Graph
+          amount1: m.amount1, // Keep as string from The Graph
+          tickLower: ethers.BigNumber.from(m.tickLower).toString(), // Integer
+          tickUpper: ethers.BigNumber.from(m.tickUpper).toString(), // Integer
         }));
 
         if (processedMintsBatch.length > 0) {
             await mintsWriter.writeRecords(processedMintsBatch);
             console.log(`Written ${processedMintsBatch.length} mints to CSV.`);
         }
-        allMints = allMints.concat(processedMintsBatch); // For count
+        allMints = allMints.concat(processedMintsBatch); 
 
         console.log(`Fetched ${data.mints.length} mints. Total mints so far: ${allMints.length}. Current skip: ${skipMints}`);
         if (data.mints.length < MAX_RECORDS_PER_QUERY) {
@@ -327,9 +327,9 @@ async function fetchHistoricalDataWithTheGraph(
           timestamp
           owner
           origin
-          amount
-          amount0
-          amount1
+          amount # Liquidity amount, integer
+          amount0 # Token amount, decimal string
+          amount1 # Token amount, decimal string
           tickLower
           tickUpper
         }
@@ -351,18 +351,18 @@ async function fetchHistoricalDataWithTheGraph(
           timestamp: b.timestamp,
           owner: b.owner,
           origin: b.origin,
-          amount: ethers.BigNumber.from(b.amount).toString(),
-          amount0: ethers.BigNumber.from(b.amount0).toString(),
-          amount1: ethers.BigNumber.from(b.amount1).toString(),
-          tickLower: ethers.BigNumber.from(b.tickLower).toString(),
-          tickUpper: ethers.BigNumber.from(b.tickUpper).toString(),
+          amount: ethers.BigNumber.from(b.amount).toString(), // Liquidity, integer
+          amount0: b.amount0, // Keep as string from The Graph
+          amount1: b.amount1, // Keep as string from The Graph
+          tickLower: ethers.BigNumber.from(b.tickLower).toString(), // Integer
+          tickUpper: ethers.BigNumber.from(b.tickUpper).toString(), // Integer
         }));
         
         if (processedBurnsBatch.length > 0) {
             await burnsWriter.writeRecords(processedBurnsBatch);
             console.log(`Written ${processedBurnsBatch.length} burns to CSV.`);
         }
-        allBurns = allBurns.concat(processedBurnsBatch); // For count
+        allBurns = allBurns.concat(processedBurnsBatch); 
 
         console.log(`Fetched ${data.burns.length} burns. Total burns so far: ${allBurns.length}. Current skip: ${skipBurns}`);
         if (data.burns.length < MAX_RECORDS_PER_QUERY) {
