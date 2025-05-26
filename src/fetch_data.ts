@@ -4,10 +4,10 @@ import { GraphQLClient, gql } from 'graphql-request';
 import { createObjectCsvWriter } from 'csv-writer';
 
 // Configuration constants/variables
-const INFURA_URL = 'YOUR_RPC_URL_HERE'; // Replace with your Infura or Alchemy URL
+const INFURA_URL = 'https://mainnet.infura.io/v3/97574cc27eba4c56ae3ae8937f706131'; // Replace with your Infura or Alchemy URL
 const POOL_ADDRESS = '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640'; // Example: USDC/WETH 0.05% pool
 const THE_GRAPH_URL = 'https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3';
-const MAX_RECORDS_PER_QUERY = 100; // The Graph typically limits to 100 or 1000
+const MAX_RECORDS_PER_QUERY = 1000; // The Graph typically limits to 100 or 1000
 
 // ABI for IUniswapV3Pool
 const IUniswapV3PoolABI = [
@@ -371,10 +371,10 @@ async function writeBurnsToCsv(burns: BurnData[], filePath: string) {
 
 
 async function main() {
-  if (INFURA_URL === 'YOUR_RPC_URL_HERE') {
-    console.warn("Please replace 'YOUR_RPC_URL_HERE' with your actual RPC URL in src/fetch_data.ts");
-    // For demonstration, we'll proceed, but SDK calls will likely fail.
-  }
+  // if (INFURA_URL === 'YOUR_RPC_URL_HERE') {
+  //   console.warn("Please replace 'YOUR_RPC_URL_HERE' with your actual RPC URL in src/fetch_data.ts");
+  //   // For demonstration, we'll proceed, but SDK calls will likely fail.
+  // }
   const provider = new ethers.providers.JsonRpcProvider(INFURA_URL);
   const graphQLClient = new GraphQLClient(THE_GRAPH_URL);
 
