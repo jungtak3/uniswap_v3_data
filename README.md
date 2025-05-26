@@ -6,48 +6,59 @@ This project fetches historical event data (swaps, mints, burns) for a specified
 
 - Fetches historical swaps, mints, and burns for a given Uniswap v3 pool.
 - Uses The Graph for efficient querying of historical blockchain data.
-- Implements pagination to retrieve comprehensive datasets.
-- Processes data into a user-friendly format.
-- Saves data to separate CSV files for swaps, mints, and burns.
-- Configurable for different pools and time ranges (though currently hardcoded, future improvement will be to use environment variables).
+- Implements robust pagination to retrieve comprehensive datasets for swaps, mints, and burns.
+- Handles transient network errors with retries and delays.
+- Writes data to CSV files incrementally, reducing memory usage for large datasets.
+- Configurable via environment variables for pool address, RPC URL, and time range.
 
 ## Prerequisites
 
 - Node.js (v16 or later recommended)
 - npm (comes with Node.js)
 
-## Setup & Installation
+## Setup & Configuration
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository_url> # User will fill this in
-    cd <repository_directory>  # User will fill this in
+    git clone <repository_url> # Replace with the actual URL
+    cd <repository_directory>  # Replace with the actual directory name
     ```
+
 2.  **Install dependencies:**
     ```bash
     npm install
     ```
-3.  **Configure the script (`src/fetch_data.ts`):**
-    *   **RPC URL:** Update the `INFURA_URL` variable with your Ethereum node provider URL.
-        *Example:* `const INFURA_URL = 'https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID';`
-    *   **Pool Address:** Modify the `POOL_ADDRESS` variable to the Uniswap v3 pool you want to query.
-        *Example (USDC/WETH 0.05%):* `const POOL_ADDRESS = '0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640';`
-    *   **Time Range:** Adjust `startTimestamp` and `endTimestamp` in the `main` function to define the period for data fetching. Timestamps are in seconds.
-        *Example (for a specific hour):*
-        ```typescript
-        const endTimestamp = Math.floor(Date.now() / 1000); // Current time
-        const startTimestamp = endTimestamp - (60 * 60); // 1 hour ago
-        ```
+
+3.  **Configure Environment Variables:**
+    The script is configured using environment variables. Create a `.env` file in the project root by copying the `.env.example` file:
+    ```bash
+    cp .env.example .env
+    ```
+    Then, edit the `.env` file with your specific parameters:
+
+    *   **`INFURA_URL`**: Your Ethereum node provider RPC URL. This is essential for some SDK functionalities, though the primary data fetching relies on The Graph.
+        *   *Example:* `INFURA_URL=https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID`
+
+    *   **`POOL_ADDRESS`**: The contract address of the Uniswap v3 pool you want to query.
+        *   *Example (USDC/WETH 0.05%):* `POOL_ADDRESS=0x88e6A0c2dDD26FEEb64F039a2c41296FcB3f5640`
+
+    *   **`START_TIMESTAMP`** (Mandatory): The Unix timestamp (in seconds) for the beginning of the data fetching period.
+        *   *Example (January 1, 2023, 00:00:00 UTC):* `START_TIMESTAMP=1672531200`
+
+    *   **`END_TIMESTAMP`** (Mandatory): The Unix timestamp (in seconds) for the end of the data fetching period.
+        *   *Example (January 2, 2023, 00:00:00 UTC):* `END_TIMESTAMP=1672617600`
+
+    **Note:** `START_TIMESTAMP` and `END_TIMESTAMP` must be provided, and `START_TIMESTAMP` must be earlier than `END_TIMESTAMP`.
 
 ## Running the Script
 
-Execute the following command in the project root:
+Once you have configured your `.env` file, execute the following command in the project root:
 
 ```bash
 npm start
 ```
 
-This will run the `src/fetch_data.ts` script using `ts-node`.
+This will run the `src/fetch_data.ts` script using `ts-node`. The script will fetch the data in batches and write it incrementally to the CSV files.
 
 ## Output
 
@@ -68,10 +79,17 @@ The script will generate the following CSV files in the project root:
 **`burns.csv`:**
 `ID,Timestamp,Owner,Origin,Amount,Amount0,Amount1,TickLower,TickUpper`
 
+## Important Notes
+
+### Handling Large Datasets:
+-   **Time:** Fetching data over extended periods (e.g., multiple months or years) can be very time-consuming. The script fetches data in batches with small delays to be polite to The Graph API.
+-   **Connection & Power:** For very long fetches, ensure you have a stable internet connection and uninterrupted power supply to the machine running the script.
+-   **File Size:** The output CSV files can become very large, potentially several gigabytes, depending on the pool's activity and the time range specified. Ensure you have adequate disk space.
+-   **Rate Limits:** While the script has retries and delays, extremely long queries might still encounter API rate limits from The Graph. Consider breaking down very large time ranges into smaller, sequential runs if you face persistent issues.
+
 ## Future Improvements
 
--   Use environment variables for configuration (RPC URL, Pool Address).
--   More robust error handling and retry mechanisms.
 -   Advanced data processing and feature engineering options.
--   Support for more types of historical data (e.g., liquidity snapshots).
--   Command-line arguments for script parameters.
+-   Support for more types of historical data (e.g., liquidity snapshots at specific intervals).
+-   Command-line arguments as an alternative or supplement to `.env` for configuration.
+-   Option to choose output formats other than CSV (e.g., Parquet, JSON lines).
